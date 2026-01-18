@@ -13,6 +13,8 @@ OBJDUMP = $(COMPILER_PATH)arm-none-eabi-objdump
 CERT = ./certs/debug
 CFLAGS += "-DALLOW_DEBUG"
 
+$(shell mkdir -p obj >/dev/null)
+
 DEPDIR = generated_dependencies
 $(shell mkdir -p -m 777 $(DEPDIR) >/dev/null)
 DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.Td
