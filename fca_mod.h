@@ -121,7 +121,7 @@ static void fca_eps_speed_override(CAN_FIFOMailBox_TypeDef *to_fwd) {
   int kph_factor = 128;
   int lkas_enable_speed = 65 * kph_factor;  // 65 kph threshold
   int apa_enable_speed = 0 * kph_factor;    // 0 kph for APA mode
-  int veh_speed = GET_BYTE(to_fwd, 4) | GET_BYTE(to_fwd, 5) << 8;
+  int veh_speed = GET_BYTE(to_fwd, 4) | (GET_BYTE(to_fwd, 5) << 8);
   int eps_cutoff_speed = veh_speed;  // Default: pass through real speed
 
   if (steer_type == 2) {
@@ -136,7 +136,7 @@ static void fca_eps_speed_override(CAN_FIFOMailBox_TypeDef *to_fwd) {
   to_fwd->RDHR &= 0x00FF0000;  // Clear speed and checksum, keep counter
   to_fwd->RDHR |= eps_cutoff_speed;
   int crc = fca_compute_checksum(to_fwd);
-  to_fwd->RDHR |= (((crc << 8) << 8) << 8);
+  to_fwd->RDHR |= ((uint32_t)crc << 24);
 }
 
 // ============================================================================
@@ -198,7 +198,7 @@ static void fca_send_apa_torque(CAN_FIFOMailBox_TypeDef *to_fwd) {
   }
   to_fwd->RDHR &= 0x00FF0000;  // Keep counter
   int crc = fca_compute_checksum(to_fwd);
-  to_fwd->RDHR |= (((crc << 8) << 8) << 8);
+  to_fwd->RDHR |= ((uint32_t)crc << 24);
 }
 
 // ============================================================================
@@ -222,7 +222,7 @@ static void fca_acc_decel_msg(CAN_FIFOMailBox_TypeDef *to_fwd) {
     to_fwd->RDHR |= ((acc_brk_prep << 8) << 8) << 1;
 
     int crc = fca_compute_checksum(to_fwd);
-    to_fwd->RDHR |= (((crc << 8) << 8) << 8);
+    to_fwd->RDHR |= ((uint32_t)crc << 24);
   }
 }
 
@@ -249,7 +249,7 @@ static void fca_acc_accel_msg(CAN_FIFOMailBox_TypeDef *to_fwd) {
     to_fwd->RDHR |= (acc_eng_req << 7);
     to_fwd->RDHR |= (acc_torq >> 8) | ((acc_torq << 8) & 0xFFFF);
     int crc = fca_compute_checksum(to_fwd);
-    to_fwd->RDHR |= (((crc << 8) << 8) << 8);
+    to_fwd->RDHR |= ((uint32_t)crc << 24);
   }
 }
 
