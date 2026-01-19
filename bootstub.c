@@ -50,8 +50,8 @@ const board *current_board;
 #include "drivers/usb.h"
 //#include "drivers/uart.h"
 
-#include "crypto/rsa.h"
-#include "crypto/sha.h"
+#include "rsa.h"
+#include "sha.h"
 
 #include "cert.h"
 
