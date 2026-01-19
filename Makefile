@@ -8,7 +8,7 @@ CFLAGS = -g -Wall -Wextra -Wstrict-prototypes -Werror
 CFLAGS += -mlittle-endian -mthumb -mcpu=cortex-m4
 CFLAGS += -mhard-float -DSTM32F4 -DSTM32F413xx -mfpu=fpv4-sp-d16 -fsingle-precision-constant
 CFLAGS += -I inc -nostdlib -fno-builtin -std=gnu11 -Os
-CFLAGS += -Tlinker.ld
+CFLAGS += -Tld/linker.ld
 CFLAGS += -DALLOW_DEBUG
 
 STARTUP = startup
@@ -36,7 +36,7 @@ $(OBJDIR)/%.$(PROJ_NAME).o: %.c $(OBJDIR)/%.d
 	$(POSTCOMPILE)
 
 # Compile startup assembly
-$(OBJDIR)/$(STARTUP).o: $(STARTUP).s
+$(OBJDIR)/$(STARTUP).o: ld/$(STARTUP).s
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 # Firmware binary

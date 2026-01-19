@@ -452,59 +452,55 @@ void can_rx(uint8_t can_number) {
       to_send_mod.RDHR = to_push_mod.RDHR;
 
       if (bus_number == 0) {  // TO EPS
-        if (addr == 284) { //veh_speed
-          send_steer_enable_speed(&to_send_mod);
-          can_send(&to_send_mod, 2, true);
-         }
-        if (addr == 292) { //xxx
-          send_xxx_apa_signature(&to_send_mod);
+        if (addr == 284) { // Vehicle speed - EPS speed override
+          fca_eps_speed_override(&to_send_mod);
           can_send(&to_send_mod, 2, true);
         }
-        if (addr == 324) { //trans gear
-          send_trans_apa_signature(&to_send_mod);
-          can_send(&to_send_mod,2, true);
-        }
-        if (addr == 344) { //counter
-          send_count_apa_signature(&to_send_mod);
+        if (addr == 324) { // Trans gear - APA spoof reverse
+          fca_spoof_trans_reverse(&to_send_mod);
           can_send(&to_send_mod, 2, true);
         }
-        if (addr == 368) { //shifter
-          send_shifter_apa_signature(&to_send_mod);
+        if (addr == 344) { // Counter - APA zero counter
+          fca_zero_counter_msg(&to_send_mod);
           can_send(&to_send_mod, 2, true);
         }
-        if (addr == 514) { //whl spd
-          send_wspd_apa_signature(&to_send_mod);
+        if (addr == 368) { // Shifter - APA spoof reverse
+          fca_spoof_shifter_reverse(&to_send_mod);
           can_send(&to_send_mod, 2, true);
         }
-        if (addr == 671) { //apa
-          send_apa_signature(&to_send_mod);
+        if (addr == 514) { // Wheel speed - APA zero speed
+          fca_zero_wheel_speed(&to_send_mod);
           can_send(&to_send_mod, 2, true);
         }
-        if (addr == 820) { //shifter
-          send_rev_apa_signature(&to_send_mod);
+        if (addr == 671) { // APA torque command
+          fca_send_apa_torque(&to_send_mod);
           can_send(&to_send_mod, 2, true);
         }
-        if (addr == 571) { //wheel buttons
-          send_wheel_button_msg(&to_send_mod);
+        if (addr == 820) { // Reverse indicator - APA clear
+          fca_clear_reverse_indicator(&to_send_mod);
+          can_send(&to_send_mod, 2, true);
+        }
+        if (addr == 571) { // Wheel buttons
+          fca_wheel_button_msg(&to_send_mod);
           can_send(&to_send_mod, 1, true);
         }
-        chrysler_wp();
-     }
+        fca_heartbeat();
+      }
 
-     if (bus_number == 1) {
-        if (addr == 500) { //0x1f4
-          send_acc_decel_msg(&to_send_mod);
-          can_send(&to_send_mod, 0, true);
-         }
-        if (addr == 501) { //0x1f5
-          send_acc_dash_msg(&to_send_mod);
+      if (bus_number == 1) {
+        if (addr == 500) { // ACC decel command
+          fca_acc_decel_msg(&to_send_mod);
           can_send(&to_send_mod, 0, true);
         }
-        if (addr == 625) { //0x271
-          send_acc_accel_msg(&to_send_mod);
+        if (addr == 501) { // ACC dash display
+          fca_acc_dash_msg(&to_send_mod);
           can_send(&to_send_mod, 0, true);
         }
-     }
+        if (addr == 625) { // ACC accel/engine torque
+          fca_acc_accel_msg(&to_send_mod);
+          can_send(&to_send_mod, 0, true);
+        }
+      }
 
     }
 
