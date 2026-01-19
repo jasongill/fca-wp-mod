@@ -1,6 +1,8 @@
 # fca-wp-mod
 
-Custom firmware for the Comma "White Panda" (STM32F413-based) that enables low-speed LKAS steering on FCA (Chrysler/Dodge/Jeep/Ram) vehicles.
+Custom firmware for the Comma "White Panda" (STM32F413-based) that enables low-speed steering on FCA (Chrysler/Dodge/Jeep/Ram) vehicles using Comma.ai "self-driving" units.
+
+Since the White Panda is no longer commercially available, this mod targets the custom-made version created by VanillaGorillaa, which is plug-and-play with the Chrysler Pacifica (and likely many other FCA vehicles). You can [purchase the VanillaGorilla WP Mod here](https://shop.retropilot.org/product/chrysler-wp-mod-board/), and [find installation instructions for the module here](https://docs.google.com/document/d/1hfttNMyqunWpZZNb7Pa9Lmi9tGDNRmtYrjkyO2-mUjs/edit?usp=sharing).
 
 ## Installation
 
