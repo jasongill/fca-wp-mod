@@ -52,8 +52,8 @@ jobs:
       - name: Create release zip
         run: |
           mkdir -p release
-          cp panda.bin release/fca-wp-mod.bin
-          cd release && zip fca-wp-mod-${{ github.ref_name }}.zip fca-wp-mod.bin
+          cp panda.bin release/fca-wp-mod.fw
+          cd release && zip fca-wp-mod-${{ github.ref_name }}.zip fca-wp-mod.fw
 
       - name: Get tag message
         id: tag

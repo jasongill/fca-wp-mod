@@ -9,7 +9,7 @@ Since the White Panda is no longer commercially available, this mod targets the 
 ### Option 1: Pre-built Binary (Recommended)
 
 1. Download the latest `fca-wp-mod-vX.X.X.zip` from [Releases](../../releases)
-2. Extract `fca-wp-mod.bin` from the zip
+2. Extract `fca-wp-mod.fw` from the zip
 3. Install `dfu-util`:
    - **Linux:** `sudo apt-get install dfu-util`
    - **macOS:** `brew install dfu-util`
@@ -17,7 +17,7 @@ Since the White Panda is no longer commercially available, this mod targets the 
 4. Hold the button on the White Panda while connecting to USB
 5. Flash the firmware:
    ```bash
-   dfu-util -d 0483:df11 -a 0 -s 0x08000000:leave -D fca-wp-mod.bin
+   dfu-util -d 0483:df11 -a 0 -s 0x08000000:leave -D fca-wp-mod.fw
    ```
 
 ### Option 2: Build from Source
