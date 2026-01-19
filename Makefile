@@ -11,7 +11,6 @@ CFLAGS += -I inc -nostdlib -fno-builtin -std=gnu11 -Os
 CFLAGS += -Tstm32_flash.ld
 CFLAGS += -DALLOW_DEBUG
 
-CERT = ./certs/debug
 STARTUP = startup_stm32f413xx
 
 # Create output directories
@@ -24,14 +23,13 @@ DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.Td
 POSTCOMPILE = @mv -f $(DEPDIR)/$*.Td $(DEPDIR)/$*.d && touch $@
 
 # Default target
-all: $(OBJDIR)/bootstub.$(PROJ_NAME).bin $(OBJDIR)/$(PROJ_NAME).bin
+all: $(OBJDIR)/$(PROJ_NAME).bin
 
 # Flash firmware via DFU
-flash: $(OBJDIR)/bootstub.$(PROJ_NAME).bin $(OBJDIR)/$(PROJ_NAME).bin
+flash: $(OBJDIR)/$(PROJ_NAME).bin
 	@echo "Press and hold the button on your WP Mod while connecting to USB"
 	@sleep 1.0
-	$(DFU_UTIL) -d 0483:df11 -a 0 -s 0x08004000 -D $(OBJDIR)/$(PROJ_NAME).bin
-	$(DFU_UTIL) -d 0483:df11 -a 0 -s 0x08000000:leave -D $(OBJDIR)/bootstub.$(PROJ_NAME).bin
+	$(DFU_UTIL) -d 0483:df11 -a 0 -s 0x08000000:leave -D $<
 
 # Compile C files
 $(OBJDIR)/%.$(PROJ_NAME).o: %.c $(DEPDIR)/%.d
@@ -42,16 +40,10 @@ $(OBJDIR)/%.$(PROJ_NAME).o: %.c $(DEPDIR)/%.d
 $(OBJDIR)/$(STARTUP).o: $(STARTUP).s
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-# Main firmware binary
+# Firmware binary
 $(OBJDIR)/$(PROJ_NAME).bin: $(OBJDIR)/$(STARTUP).o $(OBJDIR)/main.$(PROJ_NAME).o
-	$(CC) -Wl,--section-start,.isr_vector=0x8004000 $(CFLAGS) -o $(OBJDIR)/$(PROJ_NAME).elf $^
-	$(OBJCOPY) -v -O binary $(OBJDIR)/$(PROJ_NAME).elf $(OBJDIR)/code.bin
-	SETLEN=1 crypto/sign.py $(OBJDIR)/code.bin $@ $(CERT)
-
-# Bootstub binary
-$(OBJDIR)/bootstub.$(PROJ_NAME).bin: $(OBJDIR)/$(STARTUP).o $(OBJDIR)/bootstub.$(PROJ_NAME).o $(OBJDIR)/sha.$(PROJ_NAME).o $(OBJDIR)/rsa.$(PROJ_NAME).o
-	$(CC) $(CFLAGS) -o $(OBJDIR)/bootstub.$(PROJ_NAME).elf $^
-	$(OBJCOPY) -v -O binary $(OBJDIR)/bootstub.$(PROJ_NAME).elf $@
+	$(CC) $(CFLAGS) -o $(OBJDIR)/$(PROJ_NAME).elf $^
+	$(OBJCOPY) -v -O binary $(OBJDIR)/$(PROJ_NAME).elf $@
 
 # Dependency tracking
 $(DEPDIR)/%.d: ;
@@ -62,4 +54,4 @@ include $(wildcard $(patsubst %,$(DEPDIR)/%.d,$(basename $(wildcard *.c))))
 clean:
 	@rm -rf $(DEPDIR) $(OBJDIR)
 
-.PHONY: all recover clean
+.PHONY: all flash clean
