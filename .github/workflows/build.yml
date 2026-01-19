@@ -1,0 +1,63 @@
+name: Build Firmware
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install ARM toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-none-eabi
+
+      - name: Build firmware
+        run: make
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware
+          path: obj/panda.bin
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: firmware
+
+      - name: Create release zip
+        run: |
+          mkdir -p release
+          cp panda.bin release/fca-wp-mod.bin
+          cd release && zip fca-wp-mod-${{ github.ref_name }}.zip fca-wp-mod.bin
+
+      - name: Get tag message
+        id: tag
+        run: |
+          echo "message<<EOF" >> $GITHUB_OUTPUT
+          git tag -l --format='%(contents)' ${{ github.ref_name }} >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/fca-wp-mod-${{ github.ref_name }}.zip
+          body: ${{ steps.tag.outputs.message }}
