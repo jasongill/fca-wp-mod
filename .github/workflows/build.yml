@@ -18,10 +18,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install ARM toolchain
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gcc-arm-none-eabi
+      - name: Cache ARM toolchain
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: gcc-arm-none-eabi
+          version: 1.0
 
       - name: Build firmware
         run: make
