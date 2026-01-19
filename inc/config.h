@@ -10,6 +10,10 @@
 #define PANDA
 #include "stm32f4xx.h"
 
+// Firmware version
+#define FW_VERSION "1.0.0"
+const uint8_t fw_version[] = FW_VERSION;
+
 #define USB_VID 0xbbaaU
 
 #ifdef BOOTSTUB

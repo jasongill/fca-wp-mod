@@ -3,7 +3,6 @@
 
 // ********************* Includes *********************
 #include "config.h"
-#include "gitversion.h"
 
 #include "main_declarations.h"
 #include "critical.h"
@@ -12,33 +11,33 @@
 #include "provision.h"
 #include "faults.h"
 
-#include "drivers/registers.h"
-#include "drivers/interrupts.h"
+#include "registers.h"
+#include "interrupts.h"
 
-#include "drivers/llcan.h"
-#include "drivers/llgpio.h"
-#include "drivers/adc.h"
-#include "drivers/pwm.h"
+#include "llcan.h"
+#include "llgpio.h"
+#include "adc.h"
+#include "pwm.h"
 
 #include "board.h"
 
-#include "drivers/uart.h"
-#include "drivers/usb.h"
-#include "drivers/gmlan_alt.h"
-#include "drivers/kline_init.h"
-#include "drivers/timer.h"
-#include "drivers/clock.h"
+#include "uart.h"
+#include "usb.h"
+#include "gmlan_alt.h"
+#include "kline_init.h"
+#include "timer.h"
+#include "clock.h"
 
 #include "gpio.h"
 
 #ifndef EON
-#include "drivers/spi.h"
+#include "spi.h"
 #endif
 
 #include "power_saving.h"
 #include "safety.h"
 
-#include "drivers/can.h"
+#include "can.h"
 
 struct __attribute__((packed)) health_t {
   uint32_t uptime_pkt;
@@ -369,9 +368,9 @@ int usb_cb_control_msg(USB_Setup_TypeDef *setup, uint8_t *resp, bool hardwired) 
       break;
     // **** 0xd6: get version
     case 0xd6:
-      COMPILE_TIME_ASSERT(sizeof(gitversion) <= MAX_RESP_LEN);
-      (void)memcpy(resp, gitversion, sizeof(gitversion));
-      resp_len = sizeof(gitversion) - 1U;
+      COMPILE_TIME_ASSERT(sizeof(fw_version) <= MAX_RESP_LEN);
+      (void)memcpy(resp, fw_version, sizeof(fw_version));
+      resp_len = sizeof(fw_version) - 1U;
       break;
     // **** 0xd8: reset ST
     case 0xd8:

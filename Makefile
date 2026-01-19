@@ -8,19 +8,18 @@ CFLAGS = -g -Wall -Wextra -Wstrict-prototypes -Werror
 CFLAGS += -mlittle-endian -mthumb -mcpu=cortex-m4
 CFLAGS += -mhard-float -DSTM32F4 -DSTM32F413xx -mfpu=fpv4-sp-d16 -fsingle-precision-constant
 CFLAGS += -I inc -nostdlib -fno-builtin -std=gnu11 -Os
-CFLAGS += -Tstm32_flash.ld
+CFLAGS += -Tlinker.ld
 CFLAGS += -DALLOW_DEBUG
 
-STARTUP = startup_stm32f413xx
+STARTUP = startup
 
-# Create output directories
+# Create output directory
 OBJDIR = obj
 $(shell mkdir -p $(OBJDIR) >/dev/null)
 
-DEPDIR = generated_dependencies
-$(shell mkdir -p $(DEPDIR) >/dev/null)
-DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.Td
-POSTCOMPILE = @mv -f $(DEPDIR)/$*.Td $(DEPDIR)/$*.d && touch $@
+# Dependency tracking (stored in obj directory)
+DEPFLAGS = -MT $@ -MMD -MP -MF $(OBJDIR)/$*.Td
+POSTCOMPILE = @mv -f $(OBJDIR)/$*.Td $(OBJDIR)/$*.d && touch $@
 
 # Default target
 all: $(OBJDIR)/$(PROJ_NAME).bin
@@ -32,7 +31,7 @@ flash: $(OBJDIR)/$(PROJ_NAME).bin
 	$(DFU_UTIL) -d 0483:df11 -a 0 -s 0x08000000:leave -D $<
 
 # Compile C files
-$(OBJDIR)/%.$(PROJ_NAME).o: %.c $(DEPDIR)/%.d
+$(OBJDIR)/%.$(PROJ_NAME).o: %.c $(OBJDIR)/%.d
 	$(CC) $(DEPFLAGS) $(CFLAGS) -o $@ -c $<
 	$(POSTCOMPILE)
 
@@ -46,12 +45,12 @@ $(OBJDIR)/$(PROJ_NAME).bin: $(OBJDIR)/$(STARTUP).o $(OBJDIR)/main.$(PROJ_NAME).o
 	$(OBJCOPY) -v -O binary $(OBJDIR)/$(PROJ_NAME).elf $@
 
 # Dependency tracking
-$(DEPDIR)/%.d: ;
-.PRECIOUS: $(DEPDIR)/%.d
-include $(wildcard $(patsubst %,$(DEPDIR)/%.d,$(basename $(wildcard *.c))))
+$(OBJDIR)/%.d: ;
+.PRECIOUS: $(OBJDIR)/%.d
+include $(wildcard $(OBJDIR)/*.d)
 
 # Clean build artifacts
 clean:
-	@rm -rf $(DEPDIR) $(OBJDIR)
+	@rm -rf $(OBJDIR)
 
 .PHONY: all flash clean
