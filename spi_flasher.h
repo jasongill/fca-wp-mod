@@ -48,16 +48,14 @@ int usb_cb_control_msg(USB_Setup_TypeDef *setup, uint8_t *resp, bool hardwired) 
       break;
     // **** 0xd0: fetch serial number
     case 0xd0:
-      #ifdef STM32F4
-        // addresses are OTP
-        if (setup->b.wValue.w == 1) {
-          memcpy(resp, (void *)0x1fff79c0, 0x10);
-          resp_len = 0x10;
-        } else {
-          get_provision_chunk(resp);
-          resp_len = PROVISION_CHUNK_LEN;
-        }
-      #endif
+      // addresses are OTP
+      if (setup->b.wValue.w == 1) {
+        memcpy(resp, (void *)0x1fff79c0, 0x10);
+        resp_len = 0x10;
+      } else {
+        get_provision_chunk(resp);
+        resp_len = PROVISION_CHUNK_LEN;
+      }
       break;
     // **** 0xd1: enter bootloader mode
     case 0xd1:
@@ -65,14 +63,7 @@ int usb_cb_control_msg(USB_Setup_TypeDef *setup, uint8_t *resp, bool hardwired) 
       // so it's blocked over wifi
       switch (setup->b.wValue.w) {
         case 0:
-          // TODO: put this back when it's no longer a "devkit"
-          //#ifdef ALLOW_DEBUG
-          #if 1
           if (hardwired) {
-          #else
-          // no more bootstub on UNO once OTP block is flashed
-          if (hardwired && ((hw_type != HW_TYPE_UNO) || (!is_provisioned()))) {
-          #endif
             puts("-> entering bootloader\n");
             enter_bootloader_mode = ENTER_BOOTLOADER_MAGIC;
             NVIC_SystemReset();

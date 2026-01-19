@@ -7,12 +7,8 @@
 //#define DEBUG_SPI
 //#define DEBUG_FAULTS
 
-#ifdef STM32F4
-  #define PANDA
-  #include "stm32f4xx.h"
-#else
-  #include "stm32f2xx.h"
-#endif
+#define PANDA
+#include "stm32f4xx.h"
 
 #define USB_VID 0xbbaaU
 

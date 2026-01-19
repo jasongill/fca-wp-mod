@@ -143,11 +143,7 @@ uint8_t device_desc[] = {
   0xFF, 0xFF, 0xFF, 0x40, // Class, Subclass, Protocol, Max Packet Size
   TOUSBORDER(USB_VID), // idVendor
   TOUSBORDER(USB_PID), // idProduct
-#ifdef STM32F4
   0x00, 0x23, // bcdDevice
-#else
-  0x00, 0x22, // bcdDevice
-#endif
   0x01, 0x02, // Manufacturer, Product
   0x03, 0x01 // Serial Number, Num Configurations
 };
@@ -1001,7 +997,6 @@ void usb_init(void) {
   USBx->GUSBCFG |= ((USBD_FS_TRDT_VALUE << 10) & USB_OTG_GUSBCFG_TRDT);
 
   // power up the PHY
-#ifdef STM32F4
   USBx->GCCFG = USB_OTG_GCCFG_PWRDWN;
 
   //USBx->GCCFG |= USB_OTG_GCCFG_VBDEN | USB_OTG_GCCFG_SDEN |USB_OTG_GCCFG_PDEN | USB_OTG_GCCFG_DCDEN;
@@ -1009,9 +1004,6 @@ void usb_init(void) {
   /* B-peripheral session valid override enable*/
   USBx->GOTGCTL |= USB_OTG_GOTGCTL_BVALOVAL;
   USBx->GOTGCTL |= USB_OTG_GOTGCTL_BVALOEN;
-#else
-  USBx->GCCFG = USB_OTG_GCCFG_PWRDWN | USB_OTG_GCCFG_NOVBUSSENS;
-#endif
 
   // be a device, slowest timings
   //USBx->GUSBCFG = USB_OTG_GUSBCFG_FDMOD | USB_OTG_GUSBCFG_PHYSEL | USB_OTG_GUSBCFG_TRDT | USB_OTG_GUSBCFG_TOCAL;

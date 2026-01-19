@@ -39,15 +39,9 @@ void early(void) {
 
   // if wrong chip, reboot
   volatile unsigned int id = DBGMCU->IDCODE;
-  #ifdef STM32F4
-    if ((id & 0xFFFU) != 0x463U) {
-      enter_bootloader_mode = ENTER_BOOTLOADER_MAGIC;
-    }
-  #else
-    if ((id & 0xFFFU) != 0x411U) {
-      enter_bootloader_mode = ENTER_BOOTLOADER_MAGIC;
-    }
-  #endif
+  if ((id & 0xFFFU) != 0x463U) {
+    enter_bootloader_mode = ENTER_BOOTLOADER_MAGIC;
+  }
 
   // setup interrupt table
   SCB->VTOR = (uint32_t)&g_pfnVectors;

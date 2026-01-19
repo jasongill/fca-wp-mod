@@ -1,8 +1,4 @@
-#ifdef STM32F4
-  #include "stm32f4xx_hal_gpio_ex.h"
-#else
-  #include "stm32f2xx_hal_gpio_ex.h"
-#endif
+#include "stm32f4xx_hal_gpio_ex.h"
 
 // Common GPIO initialization
 void common_init_gpio(void){
@@ -28,13 +24,8 @@ void common_init_gpio(void){
   set_gpio_alternate(GPIOA, 10, GPIO_AF7_USART1);
 
    // B8,B9: CAN 1
-  #ifdef STM32F4
-    set_gpio_alternate(GPIOB, 8, GPIO_AF8_CAN1);
-    set_gpio_alternate(GPIOB, 9, GPIO_AF8_CAN1);
-  #else
-    set_gpio_alternate(GPIOB, 8, GPIO_AF9_CAN1);
-    set_gpio_alternate(GPIOB, 9, GPIO_AF9_CAN1);
-  #endif
+  set_gpio_alternate(GPIOB, 8, GPIO_AF8_CAN1);
+  set_gpio_alternate(GPIOB, 9, GPIO_AF8_CAN1);
 }
 
 // Peripheral initialization
